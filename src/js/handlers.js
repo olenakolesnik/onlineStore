@@ -1,10 +1,11 @@
 import iziToast from "izitoast";
 import 'izitoast/dist/css/iziToast.min.css';
-import { fetchAllProducts, fetchCategories, fetchProductsByCategory } from "./products-api";
-import { hideLoadMoreBtn, renderCategories, renderProducts, showLoadMoreBtn } from "./render-function";
+import { fetchAllProducts, fetchCategories, fetchProductById, fetchProductsByCategory } from "./products-api";
+import { hideLoadMoreBtn, renderCategories, renderModalProduct, renderProducts, showLoadMoreBtn } from "./render-function";
 import { activeFirstBtn } from "./helpers";
 import { PRODUCTS_PER_PAGE } from "./constants";
 import { refs } from "./refs"
+import { openModal, closeModal } from "./modal";
 
 let currentPage = 1;
 let currentCategory = 'ALL';
@@ -97,3 +98,30 @@ export function setActiveCategory(activeBtn) {
   refs.productsList.innerHTML = '';
   renderProducts(data.products);
 }
+// Клік по картці
+export async function onProductClick(e) {
+    const card = e.target.closest(".products__item");
+    if (!card) return;
+  
+    const id = card.dataset.id;
+    if (!id) return;
+  
+    try {
+        const product = await fetchProductById(id);
+      if (!product) {
+        iziToast.error({ message: "Product not found!" });
+        return;
+      }
+  
+      renderModalProduct(product);
+      openModal(); // відкриваємо модалку
+    } catch (error) {
+      console.error(error);
+      iziToast.error({ message: "Error loading product!" });
+    }
+}
+export function onModalCloseClick() {
+    closeModal();
+  }
+  
+  

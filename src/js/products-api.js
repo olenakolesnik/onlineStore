@@ -35,4 +35,14 @@ export async function fetchProductsByCategory(category, page = 1) {
     );
   
     return data;
-  }
+}
+//   запит за одним товаром по id
+export async function fetchProductById(id) {
+    try {
+        const { data } = await axios.get(`${ENDPOINTS.products}/${id}`);
+        return data;
+    } catch (error) {
+        console.error("Error fetching product by ID:", error);
+        return null;
+    }
+}

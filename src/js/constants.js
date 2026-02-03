@@ -12,4 +12,5 @@ export const PRODUCTS_PER_PAGE = 12;
 export const ENDPOINTS = {
     categories: 'products/category-list',
     products: 'products',
-};
+    
+    };
