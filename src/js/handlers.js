@@ -1,12 +1,16 @@
 import iziToast from "izitoast";
 import 'izitoast/dist/css/iziToast.min.css';
-import { fetchAllProducts, fetchCategories, fetchProductById, fetchProductsByCategory } from "./products-api";
-import { hideLoadMoreBtn, renderCategories, renderModalProduct, renderProducts, showLoadMoreBtn } from "./render-function";
+import { fetchAllProducts, fetchCategories, fetchProductById, fetchProductsByCategory, fetchProductsByQuery } from "./products-api";
+import { hideLoadMoreBtn, renderCategories, renderModalProduct, renderProducts, renderProductsReplace, showLoadMoreBtn } from "./render-function";
 import { activeFirstBtn } from "./helpers";
 import { PRODUCTS_PER_PAGE } from "./constants";
 import { refs } from "./refs"
 import { openModal, closeModal } from "./modal";
 
+refs.searchForm.addEventListener('submit', onSearchSubmit);
+refs.searchFormClearBtn.addEventListener('click', onClearClick);
+
+let currentQuery = null;
 let currentPage = 1;
 let currentCategory = 'ALL';
 
@@ -39,8 +43,12 @@ export async function getAllProducts() {
 export async function onLoadMoreClick() {
     try {
     currentPage += 1;
-        let data;
-        if (currentCategory.toUpperCase() === 'ALL') {
+      let data;
+      if (currentQuery) {
+        // 🔍 активний пошук
+        data = await fetchProductsByQuery(currentQuery, currentPage);
+      }
+       else if (currentCategory.toUpperCase() === 'ALL') {
             data = await fetchAllProducts(currentPage);
           } else {
             data = await fetchProductsByCategory(currentCategory, currentPage);
@@ -72,7 +80,8 @@ export function setActiveCategory(activeBtn) {
   const category = btn.textContent.trim();
 
   currentCategory = category.toUpperCase();
-  currentPage = 1;
+   currentPage = 1;
+   currentQuery = null;
 
      setActiveCategory(btn);
      hideLoadMoreBtn();
@@ -122,6 +131,54 @@ export async function onProductClick(e) {
 }
 export function onModalCloseClick() {
     closeModal();
+}
+export async function onSearchSubmit(event) {
+  event.preventDefault();
+  const query = refs.searchInput.value.trim();
+  if (!query) {
+    iziToast.error({ message: "Введіть назву товару!" });
+    return;
   }
-  
-  
+  currentQuery = query;
+currentPage = 1;
+currentCategory = null; 
+  try {
+    const data = await fetchProductsByQuery(query, 1);
+    if (data.total > PRODUCTS_PER_PAGE) {
+      showLoadMoreBtn();
+  } else {
+      hideLoadMoreBtn();
+  }
+    if (!data || !data.products.length) {
+      refs.productsList.innerHTML = '';
+      refs.notFound.classList.add('not-found--visible');
+      return;
+    }
+    refs.notFound.classList.remove('not-found--visible');
+    refs.productsList.innerHTML = '';
+    renderProductsReplace(data.products);
+  } catch (error) {
+    console.error('Помилка при пошуку товарів:', error);
+  }
+}
+
+export async function onClearClick() {
+  refs.searchInput.value = '';
+  refs.searchFormClearBtn.classList.remove('visible');
+  refs.notFound.classList.remove('not-found--visible');
+  currentQuery = null;
+currentPage = 1;
+currentCategory = 'ALL';
+  try {
+    const data = await fetchAllProducts(1); // ендпоінт №2
+    refs.productsList.innerHTML = '';
+    renderProductsReplace(data.products);
+    if (data.total > PRODUCTS_PER_PAGE) {
+      showLoadMoreBtn();
+    } else {
+      hideLoadMoreBtn();
+    }
+  } catch (error) {
+    console.error('Помилка при завантаженні всіх товарів:', error);
+  }
+}

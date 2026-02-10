@@ -46,3 +46,19 @@ export async function fetchProductById(id) {
         return null;
     }
 }
+// запит за пошуковим словом
+export async function fetchProductsByQuery(query, page = 1) {
+    const skip = (page - 1) * PRODUCTS_PER_PAGE;
+    try {
+        const { data } = await axios.get(`${ENDPOINTS.products}/search`, {
+            params: {
+                q: query,
+                limit: PRODUCTS_PER_PAGE,
+                skip,
+            },
+        });
+        return data;
+    } catch (error) {
+        console.error('Помилка запиту пошуку:', error);
+    }
+}
