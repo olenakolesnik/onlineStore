@@ -10,5 +10,7 @@ export const refs = {
     searchInput: document.querySelector('.search-form__input'),
     searchFormBtn: document.querySelector('.search-form__btn'),
     searchFormClearBtn: document.querySelector('.search-form__btn-clear'),
+    addToCartBtn: document.querySelector('.modal-product__cart-btn'),
+    addToWishlistBtn: document.querySelector('.modal-product__btn--wishlist'),
 
 }

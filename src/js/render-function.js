@@ -1,3 +1,7 @@
+import { getCart, saveCart, updateCartCount } from "../cart";
+import { getWishlist, saveWishlist, updateWishlistCount } from "../wishlist";
+import { openModal } from "./modal";
+import { fetchProductById } from "./products-api";
 import { refs } from "./refs";
 
 export function renderCategories(data) {
@@ -29,18 +33,19 @@ export function hideLoadMoreBtn() {
     refs.loadMoreBtn.classList.add('is-hidden');
 }
 export function renderModalProduct(product) {
-    if (!product) return;
-    const {
-        thumbnail,
-        title,
-        description,
-        price,
-        shippingInformation,
-        returnPolicy,
-        tags,
-      } = product;
+  if (!product) return;
+  const {
+    id,
+    thumbnail,
+    title,
+    description,
+    price,
+    shippingInformation,
+    returnPolicy,
+    tags,
+  } = product;
     
-      const markup = `
+  const markup = `
         <img class="modal-product__img" src="${thumbnail}" alt="${title}" />
     
         <div class="modal-product__content">
@@ -64,7 +69,56 @@ export function renderModalProduct(product) {
         </div>
       `;
     
-      refs.modalProduct.innerHTML = markup;
+  refs.modalProduct.innerHTML = markup;
+  refs.modal.dataset.id = id;
+  const cartBtn = refs.modal.querySelector('.modal-product__btn--cart');
+  const cart = getCart();
+  
+  if (cart.includes(id)) {
+    cartBtn.textContent = 'Remove from Cart';
+  } else {
+    cartBtn.textContent = 'Add to Cart';
+  }
+  cartBtn.onclick = onCartBtnClick;
+
+  const wishlistBtn = refs.modal.querySelector('.modal-product__btn--wishlist');
+  const wishlist = getWishlist();
+
+  if (wishlist.includes(id)) {
+    wishlistBtn.textContent = 'Remove from Wishlist';
+  } else {
+    wishlistBtn.textContent = 'Add to Wishlist';
+  }
+  wishlistBtn.onclick = onWishlistBtnClick;
+}
+ 
+  function onCartBtnClick() {
+    const productId = Number(refs.modal.dataset.id);
+    let cart = getCart();
+    if (cart.includes(productId)) {
+      // ❌ REMOVE
+      cart = cart.filter(id => id !== productId);
+      this.textContent = 'Add to Cart';
+    } else {
+      // ✅ ADD
+      cart.push(productId);
+      this.textContent = 'Remove from Cart';
+    }
+    saveCart(cart);
+    updateCartCount();
+  }
+function onWishlistBtnClick() {
+  const productId = Number(refs.modal.dataset.id);
+  let wishlist = getWishlist();
+  if (wishlist.includes(productId)) {
+    wishlist = wishlist.filter(id => id !== productId);
+    this.textContent = 'Add to Wishlist';
+  } else {
+    wishlist.push(productId);
+    this.textContent = 'Remove from Wishlist';
+  }
+  saveWishlist(wishlist);
+  updateWishlistCount();
 }
     
 export function renderProductsReplace(products) {
@@ -84,3 +138,29 @@ export function renderProductsReplace(products) {
     )
     .join('');
 }
+export function renderProductsWishlist(products) {
+  const productsList = document.querySelector('.products');
+  if (!productsList) return;
+  const markup = products.map(({id, thumbnail, title, brand, category, price}) => `
+       <li class="products__item" data-id="${id}">
+    <img class="products__image" src="${thumbnail}" alt="${title}"/>
+    <p class="products__title">${title}</p>
+    <p class="products__brand"><span class="products__brand--bold">Brand: ${brand}</span></p>
+    <p class="products__category">Category: ${category}</p>
+    <p class="products__price">Price: ${price}$</p>
+ </li>`).join('');
+
+  productsList.innerHTML = markup;
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const productsList = document.querySelector('.products');
+  if (!productsList) return;
+
+  productsList.addEventListener('click', (e) => {
+    const card = e.target.closest('.products__item');
+    if (!card) return;
+
+    const productId = Number(card.dataset.id);
+    openModal(productId);
+  });
+});
