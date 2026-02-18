@@ -1,5 +1,5 @@
 import { getCart, saveCart, updateCartCount } from "../cart";
-import { getWishlist, saveWishlist, updateWishlistCount } from "../wishlist";
+import { getWishlist, saveWishlist, updateWishlistCount } from "./storage";
 import { openModal } from "./modal";
 import { fetchProductById } from "./products-api";
 import { refs } from "./refs";
@@ -152,15 +152,4 @@ export function renderProductsWishlist(products) {
 
   productsList.innerHTML = markup;
 }
-document.addEventListener('DOMContentLoaded', () => {
-  const productsList = document.querySelector('.products');
-  if (!productsList) return;
 
-  productsList.addEventListener('click', (e) => {
-    const card = e.target.closest('.products__item');
-    if (!card) return;
-
-    const productId = Number(card.dataset.id);
-    openModal(productId);
-  });
-});
