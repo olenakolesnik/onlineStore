@@ -1,0 +1,2 @@
+import"./assets/cart-CAHfDyQn.js";import{u as e,r as s,o as d,g as n,f as c,a}from"./assets/handlers-CijmBXxy.js";import"./assets/vendor-Cbhu4xvy.js";async function l(){const t=n();if(!t.length){s.productsList.innerHTML="<p>Your wishlist is empty</p>";return}try{const o=(await Promise.all(t.map(i=>c(i)))).filter(Boolean);s.productsList.innerHTML="",a(o)}catch(r){console.error("Error loading wishlist products:",r)}}document.addEventListener("DOMContentLoaded",()=>{var t;e(),l(),(t=s.productsList)==null||t.addEventListener("click",d)});
+//# sourceMappingURL=wishlist.js.map
