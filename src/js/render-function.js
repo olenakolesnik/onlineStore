@@ -1,7 +1,5 @@
-import { getCart, saveCart, updateCartCount } from "../cart";
-import { getWishlist, saveWishlist, updateWishlistCount } from "./storage";
-import { openModal } from "./modal";
-import { fetchProductById } from "./products-api";
+
+import { getCart, getWishlist, saveCart, saveWishlist, updateCartCount, updateWishlistCount } from "./storage";
 import { refs } from "./refs";
 
 export function renderCategories(data) {
@@ -65,7 +63,7 @@ export function renderModalProduct(product) {
       </p>
           <p class="modal-product__price">Price: $${price}</p>
     
-          <button class="modal-product__buy-btn" type="button">Buy</button>
+           
         </div>
       `;
     
@@ -95,6 +93,7 @@ export function renderModalProduct(product) {
   function onCartBtnClick() {
     const productId = Number(refs.modal.dataset.id);
     let cart = getCart();
+    let wishlist = getWishlist();
     if (cart.includes(productId)) {
       // ❌ REMOVE
       cart = cart.filter(id => id !== productId);
@@ -103,6 +102,9 @@ export function renderModalProduct(product) {
       // ✅ ADD
       cart.push(productId);
       this.textContent = 'Remove from Cart';
+      wishlist = wishlist.filter(id => id !== productId);
+    saveWishlist(wishlist);
+    updateWishlistCount();
     }
     saveCart(cart);
     updateCartCount();
@@ -110,12 +112,16 @@ export function renderModalProduct(product) {
 function onWishlistBtnClick() {
   const productId = Number(refs.modal.dataset.id);
   let wishlist = getWishlist();
+  let cart = getCart();
   if (wishlist.includes(productId)) {
     wishlist = wishlist.filter(id => id !== productId);
     this.textContent = 'Add to Wishlist';
   } else {
     wishlist.push(productId);
     this.textContent = 'Remove from Wishlist';
+    cart = cart.filter(id => id !== productId);
+    saveCart(cart);
+    updateCartCount();
   }
   saveWishlist(wishlist);
   updateWishlistCount();
@@ -139,6 +145,22 @@ export function renderProductsReplace(products) {
     .join('');
 }
 export function renderProductsWishlist(products) {
+  const productsList = document.querySelector('.products');
+  if (!productsList) return;
+  const markup = products.map(({id, thumbnail, title, brand, category, price}) => `
+       <li class="products__item" data-id="${id}">
+    <img class="products__image" src="${thumbnail}" alt="${title}"/>
+    <p class="products__title">${title}</p>
+    <p class="products__brand"><span class="products__brand--bold">Brand: ${brand}</span></p>
+    <p class="products__category">Category: ${category}</p>
+    <p class="products__price">Price: ${price}$</p>
+ </li>`).join('');
+
+  productsList.innerHTML = markup;
+
+}
+
+export function renderProductsCartlist(products) {
   const productsList = document.querySelector('.products');
   if (!productsList) return;
   const markup = products.map(({id, thumbnail, title, brand, category, price}) => `

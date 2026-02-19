@@ -11,6 +11,6 @@ export const refs = {
     searchFormBtn: document.querySelector('.search-form__btn'),
     searchFormClearBtn: document.querySelector('.search-form__btn-clear'),
     addToCartBtn: document.querySelector('.modal-product__cart-btn'),
-    // addToWishlistBtn: document.querySelector('.modal-product__btn--wishlist'),
-
+    themeBtn: document.querySelector('.theme-toggle-btn'),
+body: document.body,
 }

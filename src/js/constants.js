@@ -12,4 +12,7 @@ export const PRODUCTS_PER_PAGE = 12;
 export const ENDPOINTS = {
     categories: 'products/category-list',
     products: 'products',
-     };
+};
+export const THEME_KEY = 'theme';
+export const LIGHT_THEME = 'theme-light';
+export const DARK_THEME = 'theme-dark';

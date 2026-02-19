@@ -2,7 +2,7 @@ import iziToast from "izitoast";
 import 'izitoast/dist/css/iziToast.min.css';
 import { fetchAllProducts, fetchCategories, fetchProductById, fetchProductsByCategory, fetchProductsByQuery } from "./products-api";
 import { hideLoadMoreBtn, renderCategories, renderModalProduct, renderProducts, renderProductsReplace, showLoadMoreBtn } from "./render-function";
-import { activeFirstBtn } from "./helpers";
+import { activeFirstBtn, hideLoader, showLoader } from "./helpers";
 import { PRODUCTS_PER_PAGE } from "./constants";
 import { refs } from "./refs"
 import { openModal, closeModal } from "./modal";
@@ -134,6 +134,7 @@ export function onModalCloseClick() {
 }
 export async function onSearchSubmit(event) {
   event.preventDefault();
+  showLoader();
   const query = refs.searchInput.value.trim();
   if (!query) {
     iziToast.error({ message: "Введіть назву товару!" });
@@ -159,6 +160,8 @@ currentCategory = null;
     renderProductsReplace(data.products);
   } catch (error) {
     console.error('Помилка при пошуку товарів:', error);
+  } finally {
+    hideLoader();
   }
 }
 

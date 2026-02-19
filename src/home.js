@@ -1,8 +1,8 @@
-import { updateCartCount } from "./cart";
+
 import { getAllProducts, getCategories, onCategoryClick, onLoadMoreClick, onModalCloseClick, onProductClick } from "./js/handlers";
-import { closeModal, openModal } from "./js/modal";
+import { initTheme, toggleTheme } from "./js/helpers";
 import { refs } from "./js/refs";
-import { updateWishlistCount } from "./js/storage";
+import { updateCartCount, updateWishlistCount } from "./js/storage";
 
 
 //Логіка сторінки Home
@@ -13,4 +13,6 @@ refs.categoryList.addEventListener('click', onCategoryClick);
 refs.productsList.addEventListener('click', onProductClick);
 updateCartCount();
 updateWishlistCount();
+initTheme();
+refs.themeBtn.addEventListener('click', toggleTheme);
 

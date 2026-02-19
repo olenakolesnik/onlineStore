@@ -1,10 +1,9 @@
 
 import { renderProductsWishlist } from "./js/render-function";
 import { fetchProductById } from "./js/products-api";
-import { onProductClick } from "./js/handlers";
 import { refs } from "./js/refs";
-import { getWishlist, updateWishlistCount } from "./js/storage";
-
+import { getWishlist, updateCartCount, updateWishlistCount } from "./js/storage";
+import { onProductClick } from "./js/handlers";
 //Логіка сторінки Wishlist
 
 
@@ -30,10 +29,13 @@ async function loadWishlistProducts() {
 
 document.addEventListener('DOMContentLoaded', () => {
     updateWishlistCount();
+    updateCartCount();
     loadWishlistProducts();
-
-    refs.productsList?.addEventListener('click', onProductClick);
    
+    if (refs.productsList) {
+        refs.productsList.addEventListener('click', onProductClick);
+      }
+
   });
   
  

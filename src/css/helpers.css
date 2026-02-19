@@ -114,3 +114,22 @@
 .load-more-btn.is-hidden {
   display: none;
 }
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #ddd;
+  border-top: 5px solid #000;
+  border-radius: 50%;
+  margin: 40px auto;
+  animation: spin 1s linear infinite;
+}
+
+.is-hidden {
+  display: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
